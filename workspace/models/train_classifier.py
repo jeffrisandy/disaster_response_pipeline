@@ -73,7 +73,7 @@ def build_model():
         ('nlp_union', FeatureUnion([
             ('tfidf_pl', Pipeline([
                 ('tfidf', TfidfTransformer()),
-                ('dim_red', SelectKBest(chi2, 500))
+                ('dim_red', SelectKBest(chi2, 100))
             ])),
             ('svd_pl', Pipeline([
                 ('tfidf_svd', TfidfTransformer()),
