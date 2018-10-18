@@ -31,6 +31,16 @@ import warnings
 warnings.filterwarnings('ignore')
 
 def load_data(database_filepath):
+    """ 
+    Load data from database 
+    Args : database_filepath
+    Return : tuple of X, y, and category_names
+        X : numpy.ndarray of text features
+        y : DataFrame of target clas
+        category_names
+    
+    """
+    
     engine = create_engine('sqlite:///{}'.format(database_filepath))
     df = pd.read_sql("SELECT * FROM messages", engine)
     X = df['message'].values
@@ -40,6 +50,16 @@ def load_data(database_filepath):
 
 
 def tokenize(text):
+    """ 
+    This function takes text string input and return a clean tokens : 
+    1. Remove punctuation
+    2. Tokenize text
+    3. Lemmatizer
+    
+    Args : String of text
+    Return : list of clean tokens
+    """
+    
     #remove punctuation
     text = re.sub(r"[^a-zA-Z0-9]", " ", text)
 
@@ -63,6 +83,13 @@ def tokenize(text):
 
 
 def build_model():
+    """ 
+    Creating pipeline model. 
+    
+    Args : None
+    Return : Pipeline model
+    
+    """
 
     msg_pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize, ngram_range=(1,2))),
@@ -78,7 +105,7 @@ def build_model():
         ]))
     ])
 
-
+    
 
     pipeline = Pipeline([
         ('features', msg_pipeline),
@@ -97,10 +124,30 @@ def evaluate_model(model, X_test, y_test, category_names):
 
 
 def save_model(model, model_filepath):
+    """ 
+    Saving model
+    Args : 
+        model. Fitted model of sklearn
+        model_filepath. for e.g 'saved_model.pkl'
+    Return : None
+    
+    """
     pickle.dump(model, open(model_filepath, 'wb'))
 
 
 def main():
+    
+    """
+    The main fuction for ML pipeline : build model, train, evaluate and saving the model 
+    
+    Instruction to run this function by command line arguments. 
+        1. the first argument  : the filepath of the disaster messages database
+        2. the second argument : the filepath of the pickle file to save the model 
+        3. Example: python train_classifier.py ../data/DisasterResponse.db classifier.pkl
+         
+    """
+    
+    
     if len(sys.argv) == 3:
         database_filepath, model_filepath = sys.argv[1:]
         print('Loading data...\n    DATABASE: {}'.format(database_filepath))

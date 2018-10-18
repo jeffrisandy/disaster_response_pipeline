@@ -30,6 +30,16 @@ import re
 app = Flask(__name__)
 
 def tokenize(text):
+    """ 
+    This function takes text string input and return a clean tokens : 
+    1. Remove punctuation
+    2. Tokenize text
+    3. Lemmatizer
+    
+    Args : String of text
+    Return : list of clean tokens
+    """
+    
     #remove punctuation
     text = re.sub(r"[^a-zA-Z0-9]", " ", text)
 
@@ -52,6 +62,7 @@ def tokenize(text):
     return clean_tokens
 
 def load(filename):
+    """This function is to load saved model"""
     return pickle.load(open(filename, 'rb'))
 
 # load data
@@ -59,18 +70,27 @@ engine = create_engine('sqlite:///../data/DisasterResponse.db')
 df = pd.read_sql_table('messages', engine)
 
 # load model
-
-
 model = load("../models/classifier.pkl")
 
 
 # index webpage displays cool visuals and receives user input text for model
 @app.route('/')
 @app.route('/index')
+
 def index():
+    """ 
+    This function will do the following :
+    1. Extract data needed for visuals
+    2. Create visuals
+    3. Encode plotly graph in JSON
+    4. Render web page with plotly graphs
+    
+    Args : None
+    Return : rendered web page
+    
+    """
     
     # extract data needed for visuals
-    # TODO: Below is an example - modify to extract data for your own visuals
     genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
     
@@ -82,8 +102,7 @@ def index():
     most_words_names = list(most_words_counts.index)
     
     # create visuals
-    # TODO: Below is an example - modify to create your own visuals
-    
+       
     graphs = [
         {
             'data': [
@@ -152,6 +171,16 @@ def index():
 # web page that handles user query and displays model results
 @app.route('/go')
 def go():
+    """ 
+    This function will do the following :
+    1. Save user input in query
+    2. Use model to predict classfication for query
+    3. Render webpage based on query classification results
+    
+    Args : None
+    Return : rendered web page
+    
+    """
     # save user input in query
     query = request.args.get('query', '')
     

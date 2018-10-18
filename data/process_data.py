@@ -6,6 +6,14 @@ from sqlalchemy import create_engine
 
 
 def load_data(messages_filepath, categories_filepath):
+    """
+    Load data from csv files
+    Args :
+        messages_filepath : filepath of messages.csv file
+        categories_filepath : filepath of categories.csv file
+        
+    Return : DataFrame. Merge of messages and categories data.
+    """
     messages = pd.read_csv(messages_filepath)
     categories = pd.read_csv(categories_filepath)
     df = messages.merge(categories, on='id')
@@ -13,6 +21,15 @@ def load_data(messages_filepath, categories_filepath):
 
 
 def clean_data(df):
+    """
+    This function is to clean the DataFrame including performing enconding of category columns 
+    and removing duplicates data
+    
+    Args : raw DataFrame
+    Return : cleaned DataFrame
+    
+    """
+    
     # create a dataframe of the 36 individual category columns
     categories = df.categories.str.split(";",expand=True)
 
@@ -51,11 +68,31 @@ def clean_data(df):
     return df
 
 def save_data(df, database_filename):
+    """ 
+    Saving DataFrame to sql database file
+    Args :
+        df : DataFrame
+        database_filename : filepath of the database to save the cleaned data
+    
+    Return : None
+    
+    """
     engine = create_engine('sqlite:///{}'.format(database_filename))
     df.to_sql('messages', engine, index=False, if_exists='replace')
 
 
 def main():
+    """
+    The main fuction of ETL 
+    
+    Instruction to run this function by command line arguments. 
+        1. 1st argument : the filepaths of the messages dataset
+        2. 2nd argument : the filepaths of the categories dataset
+        3. 3rd argument : filepath of the database to save the cleaned data
+        3. Example: process_data.py disaster_messages.csv disaster_categories.csv DisasterResponse.db
+         
+    """
+    
     if len(sys.argv) == 4:
 
         messages_filepath, categories_filepath, database_filepath = sys.argv[1:]
